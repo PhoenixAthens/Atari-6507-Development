@@ -1,7 +1,7 @@
-**Context:[`cleanMem.asm`](Add-Link-Here)**<br>
-Q1:: Why do programmers call the memory positions from `00` to `FF` in RAM as `page 0`?
+**Context:[`cleanMem.asm`](https://github.com/PhoenixAthens/Atari-6507-Development/blob/main/cleanMem/cleanMem.asm)**<br>
+`Q1::` Why do programmers call the memory positions from `00` to `FF` in RAM as `page 0`?
 
-A:: Programmers often refer to the memory range from addresses `0x00` to `0xFF` (hexadecimal) as "page 0" because of how memory is organized and addressed in computer systems.
+`A::` Programmers often refer to the memory range from addresses `0x00` to `0xFF` (hexadecimal) as "page 0" because of how memory is organized and addressed in computer systems.
 
 In many computer architectures, memory is divided into fixed-size blocks called "pages" for memory-management purposes. The size of a page can vary, but common sizes are 4KB (4096 bytes) or 8KB (8192 bytes).
 

@@ -1,4 +1,4 @@
-LET's TINKER with the good old `ATARI-2600`
+# Let's tinker with the good old `ATARI-2600`
 
 > Repository compiling Assembly code written targetting MOS-6507 processor!
 
