@@ -50,7 +50,8 @@ You see that third line `ae 34 12`, why are we seeing the address `$1234` in thi
 ---
 
 _Some Notes for the curious_<br>
-In Assembly language, <br>
+
+In Assembly language,
 
 - we have load and store instructions, in 6502 assembly, they look something like this:
 
