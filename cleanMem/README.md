@@ -53,7 +53,7 @@ _Some Notes for the curious_<br>
 
 In Assembly language,
 
-- we have load and store instructions, in 6502 assembly, they look something like this:
+- we have `load and store instructions`, in 6502 assembly, they look something like this:
 
 ```asm
   LDA   ;load the A register
@@ -65,8 +65,69 @@ In Assembly language,
   STY   ;store the value from Y register into a memory location
 ```
 
-- we have arithmetic instructions, in 6502 assembly, they look something like this:
+- we have `arithmetic instructions`, in 6502 assembly, they look something like this:
 
 ```asm
+  ADC   ;add to the accumulator (with carry)
+  SBC   ;subtract from the accumulator (with carry)
 
+  ; There are no instructions to perform multiplication and subtraction in
+  ; 6502 processor. If you want to perform multiplication, we do a series of
+  ; additions, and a series of subtractions, if we want to perform division!
+```
+
+You'll usually see a `CLC` (_clear the carry flag_) instruction before addition instruction `ADC`. Why we'd want to do this? Well, the rationale is pretty easy. To detect if our calculation resulted in a carry-over, we must first clear the carry flag.
+
+And, a `SEC` (_set the carry flag_) instruction before the subtraction instruction `SBC`. Why we'd want to do this? Well, Let's bing it! Alright!! So it goes like this:
+
+In 6502 assembly language, the `SEC` (Set Carry) instruction is used before a subtraction operation to set the carry flag. This might seem counterintuitive, but it's because of how the 6502 processor handles subtraction.
+
+The 6502 processor doesn't actually have a subtraction operation. Instead, it uses a method called _two's complement arithmetic_ to perform subtraction using addition. Here's how it works:
+
+1. To subtract a number, you first take its two's complement, which involves inverting the bits (changing 1s to 0s and vice versa) and then adding 1 to the result.
+2. You then add this two's complement to the number from which you want to subtract. The carry flag needs to be set (using `SEC`) before this addition to correctly handle the "borrow" that would occur in a traditional subtraction operation.
+
+So, in a nutshell `SEC` is used to set up the processor for a subtraction operation by ensuring the carry flag is in the correct state for the two's complement addition that the processor will perform.
+
+Q:: Now you might ask what's meaning of this part " The carry flag needs to be set (using `SEC`) before this addition to correctly handle the "borrow" that would occur in a traditional subtraction operation."? Well I asked the same question, so _up-high_!
+
+A:: It goes like this, in traditional subtraction, we "borrow" from the next higher place value when the number we're subtracting is larger than the number we're subtracting from. For example, in the subtraction `100 - 45`, we can't subtract 5 from 0, so we borrow 1 from the tens place, turning it into 10, then 10 - 5 = 5.
+
+In the 6502 processor, this "borrow" concept is inverted. Instead of borrowing 1 when we can't subtract, we "carry" 1 when we can subtract. So, before we do a subtraction, we need to set the carry flag to 1 (using `SEC`) to indicate that we haven't borrowed anything yet.
+
+Then, during the subtraction (which is usually an addition of the two's complement), if the result is less than the original number, the carry flag stays 1, indicating that no "borrow" was needed. But if the result is greater than the original number, it means we've "borrowed" and the carry flag is reset to 0.
+
+So, setting the carry flag before subtraction is like saying "we haven't borrowed anything yet". Then, the subtraction operation checks if a "borrow" is needed and updates the carry flag accordingly.
+
+---
+
+- we have `increment and decrement instructions`, in 6502 assembly, they look something like this:
+
+```asm
+  INC   ;increment the value in specified memory address by 1
+  INX   ;increment X register's value by 1
+  INY   ;increment Y register's value by 1
+
+  DEC   ;decrement the value in specified memory address by 1
+  DEX   ;decrement X register's value by 1
+  DEY   ;decrement Y register's value by 1
+```
+
+One thing to remember about the `increment & decrement instructions` is that they set the processor flags, so if the result of increment or decrement was 0, the `Z` flag in `p` register is set to 1, indicating a zero-result, and 0 otherwise. If the result is negative (the 7th bit, sign-bit turns 1) the `N` flag is `p` register is set to 1, and 0 otherwise.
+
+We also have `JMP` instruction, this acts almost like a `goto`, allowing the control flow to jump to instruction in the specified memory location!
+
+We also have conditional branching instructions, which allow control flow to jump to certain instruction and are executed based on the current state of flags in the `p` register, they go something like this
+
+```asm
+  ; in the comments below, "C" refers to the "Carry Flag", "Z" refers to the "Result Zero Flag", "N" refers to "Negative result flag", "V" refers to "Overflow flag"
+
+  BCC   ;Branch on carry clear, i.e. if C == 0
+  BCS   ;Branch on carry set, i.e. if C == 1
+  BEQ   ;Branch on result equal to 0, i.e. if Z == 1
+  BNE   ;Branch on result not equal to 0, i.e., if Z == 0
+  BMI   ;Branch on minus, i.e. if N == 1
+  BPL   ;Branch on plus, i.e. if N == 0
+  BVC   ;Branch on overflow clear, i.e. if V == 0
+  BVS   ;Branch on overflow set, i.e. if V == 1
 ```
