@@ -115,6 +115,10 @@ So, setting the carry flag before subtraction is like saying "we haven't borrowe
 
 One thing to remember about the `increment & decrement instructions` is that they set the processor flags, so if the result of increment or decrement was 0, the `Z` flag in `p` register is set to 1, indicating a zero-result, and 0 otherwise. If the result is negative (the 7th bit, sign-bit turns 1) the `N` flag is `p` register is set to 1, and 0 otherwise.
 
+```asm
+    JMP ;Jump to another location GOTO
+```
+
 We also have `JMP` instruction, this acts almost like a `goto`, allowing the control flow to jump to instruction in the specified memory location!
 
 We also have conditional branching instructions, which allow control flow to jump to certain instruction and are executed based on the current state of flags in the `p` register, they go something like this
@@ -131,3 +135,36 @@ We also have conditional branching instructions, which allow control flow to jum
   BVC   ;Branch on overflow clear, i.e. if V == 0
   BVS   ;Branch on overflow set, i.e. if V == 1
 ```
+
+---
+Now, let's use what we have learnt so far and use it to write a *loop*. So here's the code to achieve that:
+```asm
+    ldy #100 ;y = 100
+Loop:
+    dey      ;y--
+    bne Loop
+```
+Now, let's understand this program line by line!
+
+*First*: `ldy #100`, here we are loading the literal decimal value '100' into the `y` register. (`ldy` is the 6502 assembly instruction to load a value into the `y` register)
+
+*Second*: `Loop:`, this is simply just an alias to a ROM address
+
+*Third*: `dey`, this statment falls under the `Loop` label and will decrement the value stored in the `y` register by 1.
+
+*Fourth*: `bne Loop`, this is the instruction that makes the label `Loop` function like a loop, this instruction `bne Loop` will *branch back to the address stored in label `Loop`* if the `Z` status flag of the `P` register is not set (i.e. if Z == 0)
+
+
+Something interesting that you might have noticed is that throughout the above explanation we used the term `ROM` address and not `RAM` address! Now, why is that? Well the simple guess would be the fact that Atari 2600 and other similar consoles used ROM Cartridges which stored the game logic, so the address in code would in fact be referring to addresses on that ROM cartridge.
+
+The formal explanation however goes something like this,
+
+In the context of the Atari 2600 and many other game consoles and computers, programs were stored on *ROM Cartridges*. ROM stands for Read-Only Memory, which means the data stored on it can be read but not modified. This is why the program code, including labels like `Loop`, are referring to addresses in ROM.
+
+When the cartridge is inserted into the Atari 2600, the console's hardware maps the ROM on the cartridge to its address space. The 6507 processor in the Atari 2600 then executes the instruction directly from this ROM. This is known as *memory-mapped I/O*, where the device (in this case, the ROM cartridge) is accessed as if it were a part of the main memory.
+
+So, when you define a label like `Loop` in your assembly code, the assembler will replace it with the actual address of that instruction in ROM. When the `bne Loop` instruction is executed, the processor will branch to that address in ROM if the zero flag is not set.
+
+RAM, on the other hand, is used for temporary storage of data that the program might need to modify while it's running. In the case of the Atari 2600, it had a very small amount of RAM (128 bytes) that was used for this purpose. But the actual program code was executed directly from ROM. Hence, we talk about ROM addresses in this context.
+
+----
