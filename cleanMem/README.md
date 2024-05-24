@@ -191,3 +191,29 @@ why do we define the start of our ROM cartridge from address `F000` and not `000
 `Q3::` We have defined the origin address using `org` as `$4000`, does that mean that the ROM cartridge had 16-bit addressing?
 
 `A::`
+
+----
+**Context:[`cleanMem.asm`](https://github.com/PhoenixAthens/Atari-6507-Development/blob/main/cleanMem/cleanMem.asm)**<br>
+`Q4::` In context of the following 6502 assembly code, does the stack-pointer refer to the $FF register in RAM or in ROM? (The answer is `RAM`)
+```asm
+    processor 6502
+
+    seg code    ;
+    org $F000   ; Define the code origin at $F000
+
+Start:
+    sei         ; Disable interrupts
+    cld         ; Disable the BCD decimla math mode
+    ldx #$FF    ; Loads the X register with #$FF
+    txs         ; Transfer the X register to the Stack pointer
+```
+
+`A::`
+
+---
+**Context:[`cleanMem.asm`](https://github.com/PhoenixAthens/Atari-6507-Development/blob/main/cleanMem/cleanMem.asm)**<br>
+`Q5::` I heard the following
+
+> "The addresses from $00 - $FF includes the TIA chip memory mapping addresses > and also the entire RAM of our machine"
+
+What's the purpose of the `TIA` register in Atari? Why is it included in the RAM?
