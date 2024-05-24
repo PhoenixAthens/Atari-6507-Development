@@ -168,3 +168,26 @@ So, when you define a label like `Loop` in your assembly code, the assembler wil
 RAM, on the other hand, is used for temporary storage of data that the program might need to modify while it's running. In the case of the Atari 2600, it had a very small amount of RAM (128 bytes) that was used for this purpose. But the actual program code was executed directly from ROM. Hence, we talk about ROM addresses in this context.
 
 ----
+**Context:[`cleanMem.asm`](https://github.com/PhoenixAthens/Atari-6507-Development/blob/main/cleanMem/cleanMem.asm)**<br>
+`Q1::` In the following 6507 assembly code
+```asm
+  processor 6502
+
+  seg code
+  org $F000
+```
+why do we define the start of our ROM cartridge from address `F000` and not `0000` using the `org $F000`?
+
+`A::`
+
+----
+**Context:[`cleanMem.asm`](https://github.com/PhoenixAthens/Atari-6507-Development/blob/main/cleanMem/cleanMem.asm)**<br>
+`Q2::` Why do we use the value `#$FF` in this instruction `ldx #$FF`? Are we loading the hex-value `$FF` into the `X` register or are we loading the the decimal equivalent of `$FF` into the `X` register? Why didn't we simply write `ldx $FF`? Is the purpose of `#`, to state that we are loading a literal value and distinguish it from the fact that we don't want to store an address?
+
+`A::`
+
+----
+**Context:[`cleanMem.asm`](https://github.com/PhoenixAthens/Atari-6507-Development/blob/main/cleanMem/cleanMem.asm)**<br>
+`Q3::` We have defined the origin address using `org` as `$4000`, does that mean that the ROM cartridge had 16-bit addressing?
+
+`A::`
