@@ -45,7 +45,7 @@ Now something interesting happens when our assembly code is translated into opco
   ca          ; ca is the opcode for DEX
 ```
 
-You see that third line `ae 34 12`, why are we seeing the address `$1234` in this order. Well, remember `big-endian` and `little-endian` processors. In `big-endian`, we go from left to right, representing the most-significant value first. In `little-endian`, on the other hand, we go from right to left, representing the most-significant value on the far right. Since 6502 is a little endian processor, we store the most-significant bits, in this case `12` in the far right, `34` to its left, and so on.
+You see that third line `ae 34 12`, why are we seeing the address `$1234` in this order. Well, remember `big-endian` and `little-endian` processors. In `big-endian`, we go from left to right, representing the most-significant value first. In `little-endian`, on the other hand, we go from right to left, representing the most-significant value on the far right. Since 6502 is a little endian processor, we store the most-significant byte (not bits), in this case `12` in the far right, `34` to its left, and so on.
 
 ---
 
@@ -98,6 +98,8 @@ In the 6502 processor, this "borrow" concept is inverted. Instead of borrowing 1
 Then, during the subtraction (which is usually an addition of the two's complement), if the result is less than the original number, the carry flag stays 1, indicating that no "borrow" was needed. But if the result is greater than the original number, it means we've "borrowed" and the carry flag is reset to 0.
 
 So, setting the carry flag before subtraction is like saying "we haven't borrowed anything yet". Then, the subtraction operation checks if a "borrow" is needed and updates the carry flag accordingly.
+
+(Try understanding the above text in context of subtracting `-45` from `34` and do the calculation as specified above in Binary format!!)
 
 ---
 
@@ -178,7 +180,20 @@ RAM, on the other hand, is used for temporary storage of data that the program m
 ```
 why do we define the start of our ROM cartridge from address `F000` and not `0000` using the `org $F000`?
 
-`A::`
+`A::` The reason for starting the code at address `$F000` instead of `$0000` in a 6502 assembly program is due to the memory mapping and architecture of the 6502 processor and the systems it was designed for.
+
+The 6502 processor has a 16-bit address bus, which means it can address up to 64 kilobytes (KB) of memory, ranging from $0000 to $FFFF. However, this memory space was typically divided into different sections for different purposes:
+1. *Zero Page* ($0000 - $00FF): This area was used for fast access to variables and temporary data due to the zero-page addressing mode of the 6502.
+2. *Stack* ($0100 - $01FF): This area was reserved for the system stack.
+3. *RAM* ($0200 - $CFFF): This area was used for general-purpose RAM, where program variables and data could be stored.
+4. *I/O and System Memory* ($D000 - $EFFF): This area was typically reserved for memory-mapped I/O devices and system firmware.
+5. *ROM* ($F000 - $FFFF): This area, also known as the "cartridge space," was reserved
+
+By starting the code at address `$F000`, the programmer was placing their program code in the designated ROM area, which was expected to be mapped to the system's ROM cartridge or other non-volatile memory. This allowed the program code to be executed directly from the ROM without having to be loaded into RAM first.
+
+Additionally, starting the code at `$F000` left the lower memory areas (`$0000 - $EFFF`) available for other purposes, such as system firmware, I/O devices, and RAM for program data and variables.
+
+It's worth noting that while `$F000` was a common starting address for ROM cartridges, some systems or applications might have used different memory mappings or starting addresses for their ROM code. The choice of the starting address depended on the specific system's memory layout and design.
 
 ----
 **Context:[`cleanMem.asm`](https://github.com/PhoenixAthens/Atari-6507-Development/blob/main/cleanMem/cleanMem.asm)**<br>
@@ -214,6 +229,28 @@ Start:
 **Context:[`cleanMem.asm`](https://github.com/PhoenixAthens/Atari-6507-Development/blob/main/cleanMem/cleanMem.asm)**<br>
 `Q5::` I heard the following
 
-> "The addresses from $00 - $FF includes the TIA chip memory mapping addresses > and also the entire RAM of our machine"
+> "The addresses from $00 - $FF includes the TIA chip memory mapping addresses and also the entire RAM of our machine"
 
 What's the purpose of the `TIA` register in Atari? Why is it included in the RAM?
+
+---
+**Context:[`cleanMem.asm`](https://github.com/PhoenixAthens/Atari-6507-Development/blob/main/cleanMem/cleanMem.asm)**<br>
+`Q6::` What does `zero-page addressing mode of the 6502` mean? How did it benefit the 6502 processor?
+
+`A::` The zero-page addressing mode of the 6502 processor refers to a special mode that allows for faster and more efficient access to a specific region of memory called the "zero-page."
+
+The zero-page is the first 256 bytes of memory, ranging from addresses `$0000` to `$00FF`. This region of memory can be accessed usign a single 8-bit address, rather than the full 16-bit address required for the rest of the memory.
+
+The benefit of the zero-page addressing mode is that it requires fewer clock cycles to fetch and decode the instruction, as well as fewer cycles to access the memory location. This is because the processor only needs to handle an 8-bit address instead of a 16-bit address, which simplifies the addressing logic and reduces the number of operations required.
+
+Here are some specific advantages of the zero-page addressing mode:
+1. *Faster execution*: Instructions that use zero-page addressing execute faster than instructions that use other addressing modes, as they require fewer clock cycles.
+2. *Smaller code size*: Zero-page addressing instructions use fewer bytes of memory compares to instructions that use other addressing modes, resulting in smaller and more compact code.
+3. *Efficient access to variables and temporary data*: The zero page was often used to store frequently accessed variables, temporary data, and function parameters, as accessing this region was faster than accessing other areas of memory.
+4. *Compatibility with legacy systems*: The zero-page addressing mode was a carry-over from earlier 8-bit processors, which had a smaller address space. This compatibility allowed for easier porting of code from older systems to the 6502.
+
+While the zero-page addressing mode provided significant performance benefits, it also had a limitation: only 250 bytes of memory could be directly accessed using this mode. However, this limitation was often mitigated by carefully managing the use of the zero page and employing techniques such as page-zero variable reuse or bank-switching (What is bank-switching?) for larger programs.
+
+Overall, the zero-page addressing mode was an important feature of the 6502 processor, contributing to its efficiency and performance, especially in systems with limited memory resources.
+
+---
