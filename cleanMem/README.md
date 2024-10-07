@@ -71,7 +71,7 @@ In Assembly language,
   ADC   ;add to the accumulator (with carry)
   SBC   ;subtract from the accumulator (with carry)
 
-  ; There are no instructions to perform multiplication and subtraction in
+  ; There are no instructions to perform multiplication and division in
   ; 6502 processor. If you want to perform multiplication, we do a series of
   ; additions, and a series of subtractions, if we want to perform division!
 ```
